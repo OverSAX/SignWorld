@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignWorld - Изучение РЖЯ</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .camera-feed {
+            width: 100%;
+            background: #eee;
+            aspect-ratio: 4/3;
+            margin: 10px 0;
+            position: relative;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .gesture-prompt {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:disabled {
+            background: #cccccc;
+        }
+        
+        .score {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>SignWorld</h1>
+    <div class="game-container">
+        <div class="gesture-prompt" id="gesturePrompt">Покажите жест: "Привет"</div>
+        
+        <div class="camera-feed">
+            <video id="video" autoplay playsinline></video>
+        </div>
+        
+        <div class="controls">
+            <button id="checkGesture">Проверить жест</button>
+            <button id="nextGesture">Следующий жест</button>
+        </div>
+        
+        <div class="score">Монеты: <span id="coins">0</span></div>
+    </div>
+
+    <script>
+        // Игровые данные
+        const gestures = [
+            { name: "Привет", video: "hello.mp4" },
+            { name: "Спасибо", video: "thanks.mp4" },
+            { name: "Пожалуйста", video: "please.mp4" }
+        ];
+        
+        let currentGesture = 0;
+        let coins = 0;
+        
+        // Элементы интерфейса
+        const gesturePrompt = document.getElementById('gesturePrompt');
+        const coinsDisplay = document.getElementById('coins');
+        const checkButton = document.getElementById('checkGesture');
+        const nextButton = document.getElementById('nextGesture');
+        const video = document.getElementById('video');
+        
+        // Инициализация камеры
+        async function initCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error("Ошибка доступа к камере:", err);
+                alert("Не удалось получить доступ к камере. Пожалуйста, разрешите доступ.");
+            }
+        }
+        
+        // Обновление интерфейса
+        function updateUI() {
+            gesturePrompt.textContent = `Покажите жест: "${gestures[currentGesture].name}"`;
+            coinsDisplay.textContent = coins;
+        }
+        
+        // Проверка жеста (заглушка - в реальности будет анализ через ML)
+        function checkGesture() {
+            // В реальном приложении здесь будет анализ видео с камеры
+            // Для демо просто считаем жест правильным
+            coins += 10;
+            updateUI();
+            alert("Правильно! +10 монет");
+        }
+        
+        // Следующий жест
+        function nextGesture() {
+            currentGesture = (currentGesture + 1) % gestures.length;
+            updateUI();
+        }
+        
+        // Обработчики событий
+        checkButton.addEventListener('click', checkGesture);
+        nextButton.addEventListener('click', nextGesture);
+        
+        // Инициализация
+        initCamera();
+        updateUI();
+    </script>
+</body>
+</html>
